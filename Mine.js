@@ -6,7 +6,7 @@ class Mine extends Tower {
 
   constructor(x, y) {
     super(x, y);
-    this.price = { gold: 20, iron: 1, stone: 0 };
+    this.price = { gold: 20, iron: 10, stone: 15 };
     this.connected = [];
     this.harvestSize = 1;
 
@@ -20,6 +20,23 @@ class Mine extends Tower {
     }
 
     Mine.allMines.push(this);
+  }
+
+  static tryUpgradeAll() {
+    let totalPriceOfAllMines = { gold: 0, iron: 0, stone: 0 };
+    for (let mine of Mine.allMines) {
+      for (let mat in mine.price) {
+        totalPriceOfAllMines[mat] += mine.price[mat];
+      }
+    }
+
+    for (let mat in totalPriceOfAllMines) {
+      if (totalPriceOfAllMines[mat] > materials) return false;
+    }
+    for (let mine of Mine.allMines) {
+      mine.tryUpgrade();
+    }
+    console.log(totalPriceOfAllMines);
   }
 
   show(t = frameCount, max = 50) {

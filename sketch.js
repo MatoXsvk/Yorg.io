@@ -52,14 +52,14 @@ function draw() {
   if (base) base.show();
   pop();
 
-  if (selected) showBuyingMenu();
+  if (selected) showUpgradeMenu();
 
   if (mouseIsPressed) {
     if (
       selected &&
       0 <= mouseX &&
-      mouseX <= 250 &&
-      height - 75 <= mouseY &&
+      mouseX <= 500 &&
+      height - 150 <= mouseY &&
       mouseY <= height
     )
       mousePressedOnBuyingMenu();
@@ -79,10 +79,15 @@ function draw() {
 
 function showInfo() {
   push();
-  stroke("#dd5");
+
   textSize(35);
   textStyle(BOLDITALIC);
+  stroke("#dd5");
   text("Gold: " + materials.gold, 20, 50);
+  stroke("#ccf");
+  text("Iron: " + materials.iron, 20, 85);
+  stroke("#ddd");
+  text("Stone: " + materials.stone, 20, 125);
   pop();
 }
 
@@ -135,27 +140,27 @@ function mouseWheel(event) {
 }
 
 function justClicked() {
-  if (selected && mouseX < 250 && mouseY > height - 75) clickOnUpgradeMenu();
+  if (selected && mouseX < 500 && mouseY > height - 150) clickOnUpgradeMenu();
   else clickOnMap();
 }
 
 function clickOnUpgradeMenu() {
   if (
     base !== selected &&
-    10 < mouseX &&
-    mouseX < 60 &&
-    height - 35 < mouseY &&
-    mouseY < height - 10
+    20 < mouseX &&
+    mouseX < 120 &&
+    height - 70 < mouseY &&
+    mouseY < height - 20
   ) {
     selected.sell();
     towers.splice(towers.indexOf(selected), 1);
     selected = false;
   }
   if (
-    75 < mouseX &&
-    mouseX < 135 &&
-    height - 35 < mouseY &&
-    mouseY < height - 10
+    150 < mouseX &&
+    mouseX < 270 &&
+    height - 70 < mouseY &&
+    mouseY < height - 20
   ) {
     selected.tryUpgrade();
   }
@@ -191,74 +196,76 @@ function clickedOnUsedPos(_gridPos = gridPos) {
 function mousePressedOnBuyingMenu() {
   if (
     base !== selected &&
-    10 < mouseX &&
-    mouseX < 60 &&
-    height - 35 < mouseY &&
-    mouseY < height - 10
+    20 < mouseX &&
+    mouseX < 120 &&
+    height - 70 < mouseY &&
+    mouseY < height - 20
   ) {
     stroke("#800");
     fill("#a11");
-    rect(10, height - 10, 50, -25, 10);
+    rect(20, height - 20, 100, -50, 10);
 
     noStroke();
     fill(10);
-    text("Sell", 24, height - 18);
+    text("Sell", 48, height - 36);
   }
   if (
-    75 < mouseX &&
-    mouseX < 135 &&
-    height - 35 < mouseY &&
-    mouseY < height - 10
+    150 < mouseX &&
+    mouseX < 270 &&
+    height - 70 < mouseY &&
+    mouseY < height - 20
   ) {
     stroke("#070");
     fill("#1a1");
-    rect(75, height - 10, 60, -25, 10);
+    rect(150, height - 20, 120, -50, 10);
 
     noStroke();
     fill(10);
-    text("Upgrade", 82.5, height - 18);
+    text("Upgrade", 161, height - 36);
   }
 }
 
-function showBuyingMenu() {
+function showUpgradeMenu() {
   stroke(80);
   fill(100);
-  rect(0, height, 250, -75, 0, 0, 10, 0);
+  rect(0, height, 500, -155, 0, 0, 10, 0);
+
+  textSize(25);
 
   if (base !== selected) {
     stroke("#800");
     if (
-      10 < mouseX &&
-      mouseX < 60 &&
-      height - 35 < mouseY &&
-      mouseY < height - 10
+      20 < mouseX &&
+      mouseX < 120 &&
+      height - 70 < mouseY &&
+      mouseY < height - 20
     )
       fill("#c33");
     else fill("#d44");
-    rect(10, height - 10, 50, -25, 10);
+    rect(20, height - 20, 100, -50, 10);
 
     noStroke();
     fill(10);
-    text("Sell", 24, height - 18);
+    text("Sell", 48, height - 36);
   } else {
     fill("#d44");
-    rect(10, height - 10, 50, -25, 10);
+    rect(20, height - 20, 100, -50, 10);
 
-    text("X", 31, height - 18);
+    text("X", 62, height - 36);
   }
 
   stroke("#080");
   if (
-    75 < mouseX &&
-    mouseX < 135 &&
-    height - 35 < mouseY &&
-    mouseY < height - 10
+    150 < mouseX &&
+    mouseX < 270 &&
+    height - 70 < mouseY &&
+    mouseY < height - 20
   )
     fill("#3c3");
   else fill("#4d4");
-  rect(75, height - 10, 60, -25, 10);
+  rect(150, height - 20, 120, -50, 10);
 
   noStroke();
   fill(10);
-  text("Upgrade", 82.5, height - 18);
+  text("Upgrade", 161, height - 36);
 }

@@ -39,16 +39,15 @@ class Tower extends Block {
     this.lvl = 0;
     this.health = 100;
     this.price = { gold: 0, iron: 0, stone: 0 };
-    this.totalPrice = { gold: 10, iron: 0, stone: 0 };
+    this.totalPrice = this.constructor.firstPrice;
   }
 
   tryUpgrade(_materials = materials) {
     for (let material in this.price) {
-      console.log(
-        "trying: " + material,
-        this.price[material] > _materials[material]
-      );
-      if (this.price[material] > _materials[material]) return false;
+      if (this.price[material] > _materials[material]) {
+        console.log(material);
+        return false;
+      }
     }
     this.upgrade();
   }
@@ -84,6 +83,7 @@ class Tower extends Block {
   }
 
   sell(_materials = materials, _moneyReturn = moneyReturn) {
+    console.log("Total: ", this.totalPrice, "\n return: ", moneyReturn);
     for (let mat in _materials)
       _materials[mat] += this.totalPrice[mat] * _moneyReturn;
   }
