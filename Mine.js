@@ -1,11 +1,10 @@
 class Mine extends Tower {
-  static allMines = [];
   static firstPrice = { gold: 10, iron: 15, stone: 20 };
   static basicHarvestSizes = { gold: 3, iron: 4, stone: 5 };
   static mineSpeed = 60;
 
-  constructor(x, y) {
-    super(x, y);
+  constructor(x, y, other = {}) {
+    super(x, y, other);
     this.price = { gold: 20, iron: 10, stone: 15 };
     this.connected = [];
     this.harvestSize = 1;
@@ -18,13 +17,11 @@ class Mine extends Tower {
         this.connected.push(ore);
       }
     }
-
-    Mine.allMines.push(this);
   }
 
   static tryUpgradeAll() {
     let totalPriceOfAllMines = { gold: 0, iron: 0, stone: 0 };
-    for (let mine of Mine.allMines) {
+    for (let mine of getAllTowersOfType("Mine")) {
       for (let mat in mine.price) {
         totalPriceOfAllMines[mat] += mine.price[mat];
       }
@@ -33,7 +30,7 @@ class Mine extends Tower {
     for (let mat in totalPriceOfAllMines) {
       if (totalPriceOfAllMines[mat] > materials) return false;
     }
-    for (let mine of Mine.allMines) {
+    for (let mine of getAllTowersOfType("Mine")) {
       mine.tryUpgrade();
     }
     console.log(totalPriceOfAllMines);
@@ -105,7 +102,10 @@ class Mine extends Tower {
 
   sell(_materials = materials, _moneyReturn = moneyReturn) {
     super.sell(_materials, _moneyReturn);
-    Mine.allMines.splice(Mine.allMines.indexOf(this), 1);
+    getAllTowersOfType("Mine").splice(
+      getAllTowersOfType("Mine").indexOf(this),
+      1
+    );
   }
 
   upgrade() {
@@ -114,7 +114,7 @@ class Mine extends Tower {
   }
 
   static harvest(_materials = materials) {
-    for (let mine of Mine.allMines) {
+    for (let mine of getAllTowersOfType("Mine")) {
       mine.harvest(_materials);
     }
   }

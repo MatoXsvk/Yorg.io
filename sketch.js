@@ -88,6 +88,19 @@ function showInfo() {
   text("Iron: " + materials.iron, 20, 85);
   stroke("#ddd");
   text("Stone: " + materials.stone, 20, 125);
+
+  textAlign(CENTER);
+
+  fill("#5af");
+  textSize(25);
+  rect(width, 0, -75, 30);
+  fill(100);
+  text("Load", width - 37.5, 22);
+  fill("#3f8");
+  rect(width, 30, -75, 30);
+  fill(100);
+  text("Save", width - 37.5, 54);
+
   pop();
 }
 
@@ -141,7 +154,15 @@ function mouseWheel(event) {
 
 function justClicked() {
   if (selected && mouseX < 500 && mouseY > height - 150) clickOnUpgradeMenu();
-  else clickOnMap();
+  else if (mouseX > width - 75 && mouseY < 60) {
+    if (mouseY < 30) {
+      console.log("load");
+      loadGame();
+    } else {
+      console.log("save");
+      saveGame();
+    }
+  } else clickOnMap();
 }
 
 function clickOnUpgradeMenu() {
@@ -268,4 +289,63 @@ function showUpgradeMenu() {
   noStroke();
   fill(10);
   text("Upgrade", 161, height - 36);
+}
+
+function getAllTowersOfType(typeName) {
+  if (typeName === "Base") return base;
+  else {
+    const out = [];
+    console.log();
+    for (let tower_ of towers)
+      if (tower_.constructor.name === typeName) out.push(tower_);
+
+    return out;
+  }
+}
+
+function saveGame() {
+  let dataToSave = {
+    base: base,
+    materials: materials,
+    ores: ores,
+    towers: towers,
+  };
+  localStorage.setItem("yorgData", JSON.stringify(dataToSave));
+}
+
+function loadGame() {
+  let data = JSON.parse(localStorage.getItem("yorgData"));
+
+  if (data) {
+    materials = data["materials"];
+
+    if (data["base"]) {
+      let other = {};
+      for (let prop in data["base"]) other[prop] = data["base"][prop];
+      base = new Base(data["base"].pos.x, data["base"].pos.y, other);
+    }
+
+    ores = [];
+    for (let oreData of data["ores"]) {
+      ores.push(new Ore(oreData.pos.x, oreData.pos.y, oreData.type));
+    }
+
+    towers = [];
+    for (let tower_ of data["towers"]) {
+      let allPropsString = "";
+      for (let prop in tower_) {
+        allPropsString += prop + ": " + JSON.stringify(tower_[prop]) + ", ";
+      }
+
+      towers.push(
+        eval(
+          "new " +
+            tower_.typeName +
+            "(tower_.pos.x, tower_.pos.y, {" +
+            allPropsString +
+            "});"
+        )
+      );
+    }
+  }
 }

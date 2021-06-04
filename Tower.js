@@ -34,22 +34,27 @@ class Tower extends Block {
     "#550000",
   ];
   static firstPrice = { gold: 10, iron: 0, stone: 0 };
-  constructor(x, y) {
+  constructor(x = 0, y = 0, other = {}) {
     super(x, y);
     this.lvl = 0;
     this.health = 100;
     this.price = { gold: 0, iron: 0, stone: 0 };
     this.totalPrice = this.constructor.firstPrice;
+    this.typeName = this.constructor.name;
+
+    for (let prop in other) this[prop] = other[prop];
   }
 
   tryUpgrade(_materials = materials) {
-    for (let material in this.price) {
-      if (this.price[material] > _materials[material]) {
-        console.log(material);
-        return false;
+    if (this === base || this.lvl < base.lvl) {
+      for (let material in this.price) {
+        if (this.price[material] > _materials[material]) {
+          console.log(material);
+          return false;
+        }
       }
+      this.upgrade();
     }
-    this.upgrade();
   }
 
   static buyAble(_materials = materials) {
@@ -96,8 +101,8 @@ class Tower extends Block {
 }
 
 class Base extends Tower {
-  constructor(x, y) {
-    super(x, y);
+  constructor(x, y, other = {}) {
+    super(x, y, other);
     this.health = 1000;
     this.price = 0;
   }
@@ -157,8 +162,8 @@ class Base extends Tower {
 
 class Storage extends Tower {
   static firstPrice = { gold: 20, iron: 10, stone: 0 };
-  constructor(x, y) {
-    super(x, y);
+  constructor(x, y, other = {}) {
+    super(x, y, other);
     maxStorage.gold += 250;
     maxStorage.iron += 100;
     maxStorage.stone += 200;
@@ -192,8 +197,8 @@ class Storage extends Tower {
 }
 
 class Wall extends Tower {
-  constructor(x, y) {
-    super(x, y);
+  constructor(x, y, other = {}) {
+    super(x, y, other);
     this.health = 1000;
   }
 
@@ -211,8 +216,8 @@ class Wall extends Tower {
 }
 
 class Canon extends Tower {
-  constructor(x, y) {
-    super(x, y);
+  constructor(x, y, other = {}) {
+    super(x, y, other);
     this.reloadSpeed = 1;
     this.strength = 10;
     this.radius = 100;
