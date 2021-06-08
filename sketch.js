@@ -20,6 +20,8 @@ let base;
 
 let selected;
 
+let z;
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
@@ -50,6 +52,10 @@ function draw() {
 
   for (let ore of ores) ore.show();
   if (base) base.show();
+  if (z) {
+    z.show();
+    z.move();
+  }
   pop();
 
   if (selected) showUpgradeMenu();

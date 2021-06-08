@@ -98,6 +98,10 @@ class Tower extends Block {
 
     super.show();
   }
+
+  getRealPos() {
+    return { x: (this.pos.x - 0.5) * w, y: (this.pos.y - 0.5) * w };
+  }
 }
 
 class Base extends Tower {
