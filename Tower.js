@@ -38,6 +38,7 @@ class Tower extends Block {
     super(x, y);
     this.lvl = 0;
     this.health = 100;
+    this.maxHealth = this.health;
     this.price = { gold: 0, iron: 0, stone: 0 };
     this.totalPrice = this.constructor.firstPrice;
     this.typeName = this.constructor.name;
@@ -93,14 +94,10 @@ class Tower extends Block {
       _materials[mat] += this.totalPrice[mat] * _moneyReturn;
   }
 
-  show() {
-    stroke(Tower.lvlColors[this.lvl % Tower.lvlColors.length]);
-
-    super.show();
-  }
+  show() {}
 
   getRealPos() {
-    return { x: (this.pos.x - 0.5) * w, y: (this.pos.y - 0.5) * w };
+    return { x: (this.pos.x + 0.5) * w, y: (this.pos.y + 0.5) * w };
   }
 }
 
@@ -181,6 +178,7 @@ class Storage extends Tower {
   }
 
   show() {
+    super.show();
     push();
 
     translate(this.pos.x * w, this.pos.y * w);

@@ -37,6 +37,7 @@ class Mine extends Tower {
   }
 
   show(t = frameCount, max = 50) {
+    super.show();
     push();
     rectMode(CENTER);
 

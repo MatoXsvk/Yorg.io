@@ -20,7 +20,7 @@ let base;
 
 let selected;
 
-let z;
+let zombies = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -52,10 +52,9 @@ function draw() {
 
   for (let ore of ores) ore.show();
   if (base) base.show();
-  if (z) {
-    z.show();
-    z.move();
-  }
+
+  for (let zombie of zombies) zombie.update();
+
   pop();
 
   if (selected) showUpgradeMenu();
@@ -158,17 +157,25 @@ function mouseWheel(event) {
   } else if (off.zoom >= 0.25) off.zoom /= 1.15;
 }
 
-function justClicked() {
-  if (selected && mouseX < 500 && mouseY > height - 150) clickOnUpgradeMenu();
-  else if (mouseX > width - 75 && mouseY < 60) {
-    if (mouseY < 30) {
-      console.log("load");
-      loadGame();
-    } else {
-      console.log("save");
-      saveGame();
-    }
-  } else clickOnMap();
+function justClicked(event) {
+  if (event.button === 2)
+    zombies.push(
+      new Zombie({
+        pos: { x: (mouseX - off.x) / off.zoom, y: (mouseY - off.y) / off.zoom },
+      })
+    );
+  else {
+    if (selected && mouseX < 500 && mouseY > height - 150) clickOnUpgradeMenu();
+    else if (mouseX > width - 75 && mouseY < 60) {
+      if (mouseY < 30) {
+        console.log("load");
+        loadGame();
+      } else {
+        console.log("save");
+        saveGame();
+      }
+    } else clickOnMap();
+  }
 }
 
 function clickOnUpgradeMenu() {
