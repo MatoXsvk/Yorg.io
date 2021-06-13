@@ -42,6 +42,7 @@ class Tower extends Block {
     this.price = { gold: 0, iron: 0, stone: 0 };
     this.totalPrice = this.constructor.firstPrice;
     this.typeName = this.constructor.name;
+    this.connectable = false;
 
     for (let prop in other) this[prop] = other[prop];
   }
@@ -56,6 +57,10 @@ class Tower extends Block {
       }
       this.upgrade();
     }
+  }
+
+  getType() {
+    return this.typeName;
   }
 
   static buyAble(_materials = materials) {
@@ -75,6 +80,21 @@ class Tower extends Block {
       _materials[mat] -= currentTower.firstPrice[mat];
     }
     _towers.push(new currentTower(gridPos.x, gridPos.y));
+  }
+
+  showConnections() {
+    stroke(240);
+    strokeWeight(15);
+    for (let wall of getAllTowersOfType(this.typeName)) {
+      if (wall !== this && this.isTowerNextToThis(wall)) {
+        line(
+          (this.pos.x + 0.5) * w,
+          (this.pos.y + 0.5) * w,
+          (wall.pos.x + 0.5) * w,
+          (wall.pos.y + 0.5) * w
+        );
+      }
+    }
   }
 
   upgrade(_materials = materials) {
@@ -99,12 +119,19 @@ class Tower extends Block {
   getRealPos() {
     return { x: (this.pos.x + 0.5) * w, y: (this.pos.y + 0.5) * w };
   }
+
+  isTowerNextToThis(tower) {
+    return (
+      sqrt((this.pos.x - tower.pos.x) ** 2 + (this.pos.y - tower.pos.y) ** 2) <
+      2
+    );
+  }
 }
 
 class Base extends Tower {
   constructor(x, y, other = {}) {
     super(x, y, other);
-    this.health = 1000;
+    this.health = 10000;
     this.price = 0;
   }
 
@@ -156,7 +183,6 @@ class Base extends Tower {
     rotate(PI / 4);
     fill("green");
     square(0, 0, 0.3);
-
     pop();
   }
 }
@@ -202,6 +228,7 @@ class Wall extends Tower {
   constructor(x, y, other = {}) {
     super(x, y, other);
     this.health = 1000;
+    this.connectable = true;
   }
 
   static buy(gridPos, _materials = materials, _towers = towers) {
@@ -210,6 +237,17 @@ class Wall extends Tower {
       _materials[mat] -= Wall.firstPrice[mat];
     }
     _towers.push(new Wall(gridPos.x, gridPos.y));
+  }
+
+  show() {
+    stroke(Tower.lvlColors[this.lvl % Tower.lvlColors.length]);
+    strokeWeight(5);
+    fill(Tower.lvlColors[(this.lvl + 1) % Tower.lvlColors.length]);
+    circle((this.pos.x + 0.5) * w, (this.pos.y + 0.5) * w, w * 0.6);
+
+    strokeWeight(1);
+    stroke(0);
+    circle((this.pos.x + 0.5) * w, (this.pos.y + 0.5) * w, w * 0.5);
   }
 
   upgrade() {

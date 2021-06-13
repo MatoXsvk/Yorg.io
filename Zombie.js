@@ -11,7 +11,7 @@ class Zombie {
         : { x: 0, y: floor(random(grid.y * w)) };
     this.health = 100;
     this.maxHealth = this.health;
-    this.demage = 10;
+    this.demage = 5;
     this.speed = 2;
     this.r = 17.5;
     this.lifespan = 5000;
@@ -19,7 +19,7 @@ class Zombie {
 
     for (let prop in props) this[prop] = props[prop];
   }
-
+  m;
   update() {
     this.timeLiving++;
     if (this.timeLiving >= this.lifespan)
@@ -99,8 +99,8 @@ class Zombie {
     }
   }
 
-  isTouchingTower(_towers = towers) {
-    for (let tower of [...towers, base]) {
+  isTouchingTower(_towers = towers, _base = base) {
+    for (let tower of _base ? [...towers, base] : [...towers]) {
       if (
         sqrt(
           (this.pos.x - tower.getRealPos().x) ** 2 +
@@ -113,9 +113,9 @@ class Zombie {
     return false;
   }
 
-  getTouchingTowers(_towers = towers) {
+  getTouchingTowers(_towers = towers, _base = base) {
     const out = [];
-    for (let tower of [...towers, base]) {
+    for (let tower of _base ? [...towers, base] : [...towers]) {
       if (
         sqrt(
           (this.pos.x - tower.getRealPos().x) ** 2 +
