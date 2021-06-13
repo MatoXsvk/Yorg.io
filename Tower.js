@@ -4,7 +4,8 @@ class Block {
   }
 
   show() {
-    strokeWeight(0.25);
+    stroke(250);
+    strokeWeight(1);
     circle(w * (this.pos.x + 0.5), w * (this.pos.y + 0.5), w * 0.5);
   }
 }
@@ -51,12 +52,23 @@ class Tower extends Block {
     if (this === base || this.lvl < base.lvl) {
       for (let material in this.price) {
         if (this.price[material] > _materials[material]) {
-          console.log(material);
           return false;
         }
       }
       this.upgrade();
     }
+  }
+
+  upgrade(_materials = materials) {
+    this.lvl++;
+    this.health = round(this.health * 1.5);
+
+    for (let mat in this.price) _materials[mat] -= this.price[mat];
+    for (let mat in this.price) this.totalPrice[mat] += this.price[mat];
+    for (let mat in this.price)
+      this.price[mat] *= floor(2 ** sqrt(2 * this.lvl));
+
+    this.localLvlColor = Tower.lvlColors[this.lvl % Tower.lvlColors.length];
   }
 
   getType() {
@@ -74,7 +86,6 @@ class Tower extends Block {
   }
 
   static buy(gridPos, _materials = materials, _towers = towers) {
-    console.log(this.price);
     const currentTower = this.prototype.constructor;
     for (let mat in currentTower.firstPrice) {
       _materials[mat] -= currentTower.firstPrice[mat];
@@ -97,24 +108,11 @@ class Tower extends Block {
     }
   }
 
-  upgrade(_materials = materials) {
-    this.lvl++;
-    this.health *= 1.5;
-    for (let mat in this.price)
-      this.price[mat] *= floor(2 ** sqrt(2 * this.lvl));
-    for (let mat in this.price) _materials[mat] -= this.price[mat];
-
-    for (let mat in this.price) this.totalPrice[mat] += this.price[mat];
-    this.localLvlColor = Tower.lvlColors[this.lvl % Tower.lvlColors.length];
-  }
-
   sell(_materials = materials, _moneyReturn = moneyReturn) {
     console.log("Total: ", this.totalPrice, "\n return: ", moneyReturn);
     for (let mat in _materials)
       _materials[mat] += this.totalPrice[mat] * _moneyReturn;
   }
-
-  show() {}
 
   getRealPos() {
     return { x: (this.pos.x + 0.5) * w, y: (this.pos.y + 0.5) * w };
@@ -132,7 +130,7 @@ class Base extends Tower {
   constructor(x, y, other = {}) {
     super(x, y, other);
     this.health = 10000;
-    this.price = 0;
+    this.price = { gold: 10000, iron: 1000, stone: 1000 };
   }
 
   show() {
@@ -231,14 +229,6 @@ class Wall extends Tower {
     this.connectable = true;
   }
 
-  static buy(gridPos, _materials = materials, _towers = towers) {
-    console.log(this.price);
-    for (let mat in Wall.firstPrice) {
-      _materials[mat] -= Wall.firstPrice[mat];
-    }
-    _towers.push(new Wall(gridPos.x, gridPos.y));
-  }
-
   show() {
     stroke(Tower.lvlColors[this.lvl % Tower.lvlColors.length]);
     strokeWeight(5);
@@ -261,12 +251,26 @@ class Canon extends Tower {
     this.reloadSpeed = 1;
     this.strength = 10;
     this.radius = 100;
+    this.heading = 0;
   }
 
-  static buy(gridPos, _materials = materials, _towers = towers) {
-    for (let mat in Wall.firstPrice) {
-      _materials[mat] -= Wall.firstPrice[mat];
-    }
-    _towers.push(new Wall(gridPos.x, gridPos.y));
+  show() {
+    push();
+
+    translate((this.pos.x + 0.5) * w, (this.pos.y + 0.5) * w);
+    // scale(w);
+    rotate(this.heading);
+
+    stroke(0);
+
+    fill("#dde");
+    rect(-0.25 * w, -0.5 * w, w * 0.5, 0.5 * w);
+    fill("#aaa");
+    circle(0, 0, 0.6 * w);
+
+    // stroke(250);
+    // circle(0, 0, 0.59 * w);
+
+    pop();
   }
 }

@@ -11,15 +11,16 @@ class Zombie {
         : { x: 0, y: floor(random(grid.y * w)) };
     this.health = 100;
     this.maxHealth = this.health;
-    this.demage = 5;
-    this.speed = 2;
+    this.demage = 40;
+    this.attackSpeed = 50;
+    this.speed = 5;
     this.r = 17.5;
     this.lifespan = 5000;
     this.timeLiving = 0;
 
     for (let prop in props) this[prop] = props[prop];
   }
-  m;
+
   update() {
     this.timeLiving++;
     if (this.timeLiving >= this.lifespan)
@@ -84,15 +85,16 @@ class Zombie {
   }
 
   attack(tower) {
-    if (frameCount % this.speed === 0) {
+    if (frameCount % this.attackSpeed === 0) {
       tower = tower || this.getTouchingTowers();
 
       tower.health -= this.demage;
-      if (tower.health <= 0) {
+      if (tower.health < 0) {
         if (tower !== base) {
           towers.splice(towers.indexOf(tower), 1);
         } else {
           console.log("Game over");
+          base.health = 0;
           noLoop();
         }
       }

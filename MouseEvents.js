@@ -11,10 +11,6 @@ function mouseReleased(event) {
   db = { x: false, y: false, xx: false, yy: false, times: 0 };
 }
 
-function keyPressed() {
-  console.log(keyCode);
-}
-
 function mouseWheel(event) {
   if (event.delta < 0) {
     if (off.zoom < 10) off.zoom *= 1.15;
@@ -47,8 +43,8 @@ function clickOnUpgradeMenu() {
     base !== selected &&
     20 < mouseX &&
     mouseX < 120 &&
-    height - 70 < mouseY &&
-    mouseY < height - 20
+    height - 60 < mouseY &&
+    mouseY < height - 10
   ) {
     selected.sell();
     towers.splice(towers.indexOf(selected), 1);
@@ -57,8 +53,8 @@ function clickOnUpgradeMenu() {
   if (
     150 < mouseX &&
     mouseX < 270 &&
-    height - 70 < mouseY &&
-    mouseY < height - 20
+    height - 60 < mouseY &&
+    mouseY < height - 10
   ) {
     selected.tryUpgrade();
   }
@@ -93,33 +89,34 @@ function clickedOnUsedPos(_gridPos = gridPos) {
 }
 
 function mousePressedOnBuyingMenu() {
+  textSize(25);
   if (
     base !== selected &&
     20 < mouseX &&
     mouseX < 120 &&
-    height - 70 < mouseY &&
-    mouseY < height - 20
+    height - 60 < mouseY &&
+    mouseY < height - 10
   ) {
     stroke("#800");
     fill("#a11");
-    rect(20, height - 20, 100, -50, 10);
+    rect(20, height - 10, 100, -50, 10);
 
     noStroke();
     fill(10);
-    text("Sell", 48, height - 36);
+    text("Sell", 48, height - 26);
   }
   if (
     150 < mouseX &&
     mouseX < 270 &&
-    height - 70 < mouseY &&
-    mouseY < height - 20
+    height - 60 < mouseY &&
+    mouseY < height - 10
   ) {
     stroke("#070");
     fill("#1a1");
-    rect(150, height - 20, 120, -50, 10);
+    rect(150, height - 10, 120, -50, 10);
 
     noStroke();
     fill(10);
-    text("Upgrade", 161, height - 36);
+    text("Upgrade", 161, height - 26);
   }
 }
