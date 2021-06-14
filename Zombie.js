@@ -17,6 +17,7 @@ class Zombie {
     this.r = 17.5;
     this.lifespan = 5000;
     this.timeLiving = 0;
+    this.reward = 10;
 
     for (let prop in props) this[prop] = props[prop];
   }
@@ -91,6 +92,7 @@ class Zombie {
       tower.health -= this.demage;
       if (tower.health < 0) {
         if (tower !== base) {
+          if (tower === selected) selected = undefined;
           towers.splice(towers.indexOf(tower), 1);
         } else {
           console.log("Game over");

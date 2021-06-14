@@ -45,7 +45,7 @@ function draw() {
   background(50);
 
   for (let tower of towers) if (tower.connectable) tower.showConnections();
-  for (let tower of towers) tower.show();
+  for (let tower of towers) tower.update ? tower.update() : tower.show();
 
   for (let ore of ores) ore.show();
   if (base) base.show();
