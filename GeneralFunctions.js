@@ -30,7 +30,7 @@ function getAllTowersOfType(typeName) {
   if (typeName === "Base") return base;
   else {
     const out = [];
-    console.log();
+
     for (let tower_ of towers)
       if (tower_.constructor.name === typeName) out.push(tower_);
 
@@ -85,4 +85,6 @@ function loadGame() {
   }
 }
 
-// function
+function distance(pos1, pos2) {
+  return sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2);
+}
