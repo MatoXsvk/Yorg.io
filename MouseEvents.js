@@ -73,10 +73,15 @@ function clickOnMap() {
 function clickedOnUnusedPos(_gridPos = gridPos) {
   console.log(keyCode);
   if (base) {
-    if (keyCode === 87 && Wall.buyAble()) Wall.buy(_gridPos);
-    if (keyCode === 83 && Storage.buyAble()) Storage.buy(_gridPos);
+    // if (keyCode === 83 && Storage.buyAble()) Storage.buy(_gridPos);
+
     if (keyCode === 67 && Canon.buyAble()) Canon.buy(_gridPos);
+    if (keyCode === 70 && Factory.buyAble()) Factory.buy(_gridPos);
     if (keyCode === 77 && Mine.buyAble()) Mine.buy(_gridPos);
+    if (keyCode === 83 && CanonBallFacory.buyAble())
+      CanonBallFacory.buy(_gridPos);
+    if (keyCode === 87 && Wall.buyAble()) Wall.buy(_gridPos);
+
     keyCode = false;
   } else base = new Base(_gridPos.x, _gridPos.y);
 }

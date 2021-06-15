@@ -6,8 +6,9 @@ const oreNum = [
   { name: "stone", num: 80 },
 ];
 
-let maxStorage = { gold: 1000, iron: 200, stone: 500 };
-let materials = { gold: 100, iron: 100, stone: 100 };
+const materials = { gold: 100, iron: 100, stone: 100 };
+let ammoMaterial = 0;
+let ammo = 1000;
 let towerTypeBuySelected = undefined;
 const moneyReturn = 0.95;
 
@@ -48,7 +49,7 @@ function draw() {
   for (let tower of towers) tower.update ? tower.update() : tower.show();
 
   for (let ore of ores) ore.show();
-  if (base) base.show();
+  if (base) base.update();
 
   for (let zombie of zombies) zombie.update();
 

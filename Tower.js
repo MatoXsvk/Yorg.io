@@ -44,6 +44,10 @@ class Tower extends Block {
     this.totalPrice = this.constructor.firstPrice;
     this.typeName = this.constructor.name;
     this.connectable = false;
+    this.specialLevels = [];
+
+    this.healSpeed = 150;
+    this.healStrength = 15;
 
     for (let prop in other) this[prop] = other[prop];
   }
@@ -69,6 +73,10 @@ class Tower extends Block {
       this.price[mat] *= floor(2 ** sqrt(2 * this.lvl));
 
     this.localLvlColor = Tower.lvlColors[this.lvl % Tower.lvlColors.length];
+    if (this.lvl === this.specialLevels[0]) {
+      this.specialLevels.splice(0, 1);
+      if (this.specialUpgrade) this.specialUpgrade();
+    }
   }
 
   getType() {
@@ -108,6 +116,14 @@ class Tower extends Block {
     }
   }
 
+  update() {
+    if (this.health < this.maxHealth && frameCount % this.healSpeed === 0) {
+      this.health += this.healStrength;
+      if (this.health > this.maxHealth) this.health = this.maxHealth;
+    }
+    if (this.show) this.show();
+  }
+
   sell(_materials = materials, _moneyReturn = moneyReturn) {
     console.log("Total: ", this.totalPrice, "\n return: ", moneyReturn);
     for (let mat in _materials)
@@ -130,7 +146,8 @@ class Base extends Tower {
   constructor(x, y, other = {}) {
     super(x, y, other);
     this.health = 10000;
-    this.price = { gold: 10000, iron: 1000, stone: 1000 };
+    this.maxHealth = 10000;
+    this.price = { gold: 10000, iron: 10, stone: 10 };
   }
 
   show() {
@@ -183,200 +200,122 @@ class Base extends Tower {
     square(0, 0, 0.3);
     pop();
   }
+
+  update() {
+    super.update();
+    // this.show();
+  }
 }
 
-class Storage extends Tower {
-  static firstPrice = { gold: 20, iron: 10, stone: 0 };
+// class Storage extends Tower {
+//   static firstPrice = { gold: 20, iron: 10, stone: 0 };
+//   constructor(x, y, other = {}) {
+//     super(x, y, other);
+//     maxStorage.gold += 250;
+//     maxStorage.iron += 100;
+//     maxStorage.stone += 200;
+//   }
+
+//   upgrade() {
+//     super.upgrade();
+//     maxStorage.gold += 250 * (this.lvl + 1);
+//     maxStorage.iron += 100 * (this.lvl + 1);
+//     maxStorage.stone += 200 * (this.lvl + 1);
+//   }
+
+//   show() {
+//     super.show();
+//     push();
+
+//     translate(this.pos.x * w, this.pos.y * w);
+//     scale(w);
+//     strokeWeight(0.025);
+//     noFill();
+
+//     stroke(Tower.lvlColors[this.lvl % Tower.lvlColors.length]);
+
+//     square(0.2, 0.2, 0.6);
+//     rectMode(CENTER);
+//     circle(0.35, 0.35, 0.2);
+//     square(0.65, 0.35, 0.2);
+//     triangle(0.73, 0.75, 0.73, 0.55, 0.55, 0.65);
+
+//     pop();
+//   }
+// }
+
+class Factory extends Tower {
   constructor(x, y, other = {}) {
     super(x, y, other);
-    maxStorage.gold += 250;
-    maxStorage.iron += 100;
-    maxStorage.stone += 200;
+    this.speed = 30;
+    this.efficiency = 2;
+    this.specialLevels = [3, 6, 10];
   }
 
   upgrade() {
     super.upgrade();
-    maxStorage.gold += 250 * (this.lvl + 1);
-    maxStorage.iron += 100 * (this.lvl + 1);
-    maxStorage.stone += 200 * (this.lvl + 1);
+    this.efficiency = ceil(this.efficiency * 1.2);
+  }
+
+  specialUpgrade() {
+    this.speed -= 5;
+  }
+
+  makeAmmoMaterial() {
+    if (
+      frameCount % this.speed === 0 &&
+      materials.stone > 60 &&
+      materials.iron > 75
+    ) {
+      materials.stone -= 2;
+      materials.iron--;
+      ammoMaterial += 2;
+    }
+  }
+
+  update() {
+    super.update();
+    this.makeAmmoMaterial();
+    this.show();
+  }
+}
+
+class CanonBallFacory extends Factory {
+  constructor(x, y, other = {}) {
+    super(x, y, other);
   }
 
   show() {
-    super.show();
     push();
-
     translate(this.pos.x * w, this.pos.y * w);
-    scale(w);
-    strokeWeight(0.025);
-    noFill();
 
     stroke(Tower.lvlColors[this.lvl % Tower.lvlColors.length]);
 
-    square(0.2, 0.2, 0.6);
-    rectMode(CENTER);
-    circle(0.35, 0.35, 0.2);
-    square(0.65, 0.35, 0.2);
-    triangle(0.73, 0.75, 0.73, 0.55, 0.55, 0.65);
-
-    pop();
-  }
-}
-
-class Wall extends Tower {
-  constructor(x, y, other = {}) {
-    super(x, y, other);
-    this.health = 1000;
-    this.connectable = true;
-  }
-
-  show() {
-    stroke(Tower.lvlColors[this.lvl % Tower.lvlColors.length]);
-    strokeWeight(5);
-    fill(Tower.lvlColors[(this.lvl + 1) % Tower.lvlColors.length]);
-    circle((this.pos.x + 0.5) * w, (this.pos.y + 0.5) * w, w * 0.6);
-
-    strokeWeight(1);
-    stroke(0);
-    circle((this.pos.x + 0.5) * w, (this.pos.y + 0.5) * w, w * 0.5);
-  }
-
-  upgrade() {
-    super.upgrade();
-  }
-}
-
-class Canon extends Tower {
-  constructor(x, y, other = {}) {
-    super(x, y, other);
-    this.price = { gold: 100, iron: 200, stone: 300 };
-    this.reloadSpeed = 25;
-    this.strength = 10;
-    this.range = 100;
-    this.heading = 0;
-
-    this.bullets = [];
-  }
-
-  upgrade() {
-    super.upgrade();
-    this.range *= 1.1;
-    this.strength *= 1.1;
-  }
-
-  show() {
-    push();
-
-    translate((this.pos.x + 0.5) * w, (this.pos.y + 0.5) * w);
-    rotate(this.heading + PI / 2);
-
-    stroke(0);
-    strokeWeight(1);
-
-    fill("#dde");
-    rect(-0.25 * w, -0.5 * w, w * 0.5, 0.5 * w);
-    fill("#aaa");
-    circle(0, 0, 0.6 * w);
+    fill(Tower.lvlColors[this.lvl % Tower.lvlColors.length]);
+    rect(w * 0.1, w * 0.1, w * 0.8, w * 0.8, 10);
+    stroke(250);
+    fill(50);
+    circle(w * 0.5, w * 0.4, w * 0.32);
+    circle(w * 0.37, w * 0.6, w * 0.32);
+    circle(w * 0.63, w * 0.6, w * 0.32);
 
     pop();
   }
 
-  showRange() {
-    fill(250, 10);
-    noStroke();
-    circle((this.pos.x + 0.5) * w, (this.pos.y + 0.5) * w, this.range * 2);
-  }
-
-  showBullets() {
-    for (let bullet of this.bullets) {
-      bullet.show();
+  makeAmmo() {
+    if (
+      frameCount % this.speed === 0 &&
+      materials.iron > 25 &&
+      ammoMaterial >= 4
+    ) {
+      materials.iron -= 1;
+      ammoMaterial -= 4;
+      ammo += 4;
     }
   }
-
-  moveBullets() {
-    for (let bullet of this.bullets) {
-      bullet.move();
-    }
-  }
-
-  updateBullets() {
-    for (let bullet of this.bullets) {
-      bullet.update();
-    }
-  }
-
   update() {
-    if (frameCount % this.reloadSpeed === 0) this.shoot();
-    this.updateBullets();
-    this.showRange();
+    super.update();
+    this.makeAmmo();
     this.show();
-  }
-
-  shoot(_zombies = zombies) {
-    const cannonPos = this.getRealPos();
-    for (let zombie of _zombies) {
-      const zombieDist = distance(cannonPos, zombie.pos);
-      if (zombieDist <= this.range) {
-        let heading = atan(
-          (zombie.pos.y - cannonPos.y) / (zombie.pos.x - cannonPos.x)
-        );
-        heading = cannonPos.x <= zombie.pos.x ? heading - 2 * PI : heading - PI;
-        this.heading = heading;
-        this.bullets.push(
-          new Bullet(this.pos, heading, this.strength, (bullet) =>
-            this.bullets.splice(this.bullets.indexOf(bullet), 1)
-          )
-        );
-      }
-    }
-  }
-}
-
-class Bullet {
-  constructor(pos, heading, strength, selfDestruct, props) {
-    this.pos = { x: (pos.x + 0.5) * w, y: (pos.y + 0.5) * w };
-    this.heading = heading;
-    this.strength = strength;
-    this.size = 15;
-    this.speed = 10;
-    this.selfDestruct = selfDestruct;
-    this.lifespan = 0;
-    this.maxLifeSpan = 500;
-    for (let prop in props) {
-      this[prop] = props[prop];
-    }
-  }
-
-  show() {
-    fill(200);
-    stroke(10);
-    circle(this.pos.x, this.pos.y, this.size);
-  }
-
-  move() {
-    this.pos.x += this.speed * cos(this.heading);
-    this.pos.y += this.speed * sin(this.heading);
-  }
-
-  hit(_zombies = zombies) {
-    for (let zombie of _zombies) {
-      if (distance(this.pos, zombie.pos) <= this.size / 2) {
-        zombie.health -= this.strength;
-        if (zombie.health <= 0) {
-          materials.gold += zombie.reward;
-          _zombies.splice(_zombies.indexOf(zombie), 1);
-        }
-        if (this.selfDestruct) this.selfDestruct(this);
-        return;
-      }
-    }
-  }
-
-  update() {
-    this.show();
-    this.move();
-    this.hit();
-    this.lifespan++;
-    if (this.lifespan > this.maxLifeSpan && this.selfDestruct)
-      this.selfDestruct(this);
   }
 }
