@@ -44,6 +44,9 @@ function saveGame() {
     materials: materials,
     ores: ores,
     towers: towers,
+    steel: steel,
+    ammo: ammo,
+    zombies: zombies,
   };
   localStorage.setItem("yorgData", JSON.stringify(dataToSave));
 }
@@ -55,9 +58,14 @@ function loadGame() {
     materials = data["materials"];
 
     if (data["base"]) {
-      let other = {};
-      for (let prop in data["base"]) other[prop] = data["base"][prop];
-      base = new Base(data["base"].pos.x, data["base"].pos.y, other);
+      // let other = {};
+      // for (let prop in data["base"]) other[prop] = data["base"][prop];
+      console.log(data["base"]);
+      base = new Base(
+        // data["base"].pos.x,
+        // data["base"].pos.y,
+        /*other*/ data["base"]
+      );
     }
 
     ores = [];
@@ -73,18 +81,36 @@ function loadGame() {
       }
 
       towers.push(
-        eval(
-          "new " +
-            tower_.typeName +
-            "(tower_.pos.x, tower_.pos.y, {" +
-            allPropsString +
-            "});"
-        )
+        eval("new " + tower_.typeName + "({" + allPropsString + "});")
       );
+
+      const addedTower = towers[towers.length - 1];
+      if (addedTower.constructor.name === "Canon") {
+        const newAmmo = [];
+        for (let ball of addedTower) {
+          newAmmo.push(new Bullet());
+        }
+      }
+    } /*"({pos: {x: tower_.pos.x, y: tower_.pos.y } } " +*/
+
+    steel = data.steel;
+    ammo = data.ammo;
+
+    zombies = [];
+    console.log(data);
+    for (let zombie of data["zombies"]) {
+      zombies.push(new Zombie(zombie));
     }
   }
 }
 
 function distance(pos1, pos2) {
   return sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2);
+}
+function getTime() {
+  return (frameCount / hourLength) % (dayLength + nightLength);
+}
+
+function isDay() {
+  return (frameCount / hourLength) % (dayLength + nightLength) < dayLength;
 }

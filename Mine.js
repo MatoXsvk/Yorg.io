@@ -3,8 +3,8 @@ class Mine extends Tower {
   static basicHarvestSizes = { gold: 3, iron: 4, stone: 5 };
   static mineSpeed = 60;
 
-  constructor(x, y, other = {}) {
-    super(x, y, other);
+  constructor(other = {}) {
+    super(other);
     this.price = { gold: 20, iron: 10, stone: 15 };
     this.connected = [];
     this.harvestSize = 1;
@@ -17,6 +17,8 @@ class Mine extends Tower {
         this.connected.push(ore);
       }
     }
+
+    this.setProps(other);
   }
 
   static tryUpgradeAll() {

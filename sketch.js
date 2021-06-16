@@ -6,11 +6,14 @@ const oreNum = [
   { name: "stone", num: 80 },
 ];
 
-const materials = { gold: 100, iron: 100, stone: 100 };
-let ammoMaterial = 0;
+let materials = { gold: 100, iron: 100, stone: 100 };
+let steel = 0;
 let ammo = 1000;
-let towerTypeBuySelected = undefined;
 const moneyReturn = 0.95;
+
+const dayLength = 18,
+  nightLength = 6,
+  hourLength = 1000;
 
 let towers = [],
   ores = [],
@@ -43,7 +46,7 @@ function draw() {
   translate(off.x, off.y);
   scale(off.zoom);
 
-  background(50);
+  background(70);
 
   for (let tower of towers) if (tower.connectable) tower.showConnections();
   for (let tower of towers) tower.update ? tower.update() : tower.show();
@@ -54,6 +57,7 @@ function draw() {
   for (let zombie of zombies) zombie.update();
 
   pop();
+  background(0, isDay() ? 0 : 150);
 
   if (selected) showUpgradeMenu();
 
@@ -95,11 +99,17 @@ function showInfo() {
   text("Iron: " + materials.iron, 20, 85);
   fill("#ddd");
   text("Stone: " + materials.stone, 20, 125);
+  textSize(30);
+  fill("#999");
+  text("Steel: " + steel, 20, 160);
+  textSize(25);
+  fill("#632");
+  stroke(250);
+  strokeWeight(1);
+  text("Ammo: " + ammo, 20, 190);
 
   textAlign(CENTER);
 
-  // stroke(250);
-  // strokeWeight(0);
   noStroke();
   fill("#5af");
   textSize(25);
@@ -112,6 +122,7 @@ function showInfo() {
   text("Save", width - 37.5, 54);
 
   pop();
+  showTime();
 }
 
 function showUpgradeMenu() {
@@ -195,4 +206,34 @@ function showUpgradeMenu() {
       height - 128
     );
   pop();
+}
+
+function showTime() {
+  noStroke();
+  fill(125, 170, 250);
+  arc(
+    width - 50,
+    120,
+    75,
+    75,
+    3 * HALF_PI,
+    -HALF_PI + TWO_PI * (dayLength / (dayLength + nightLength))
+  );
+
+  fill(25, 45, 100);
+
+  arc(
+    width - 50,
+    120,
+    75,
+    75,
+    -HALF_PI + TWO_PI * (dayLength / (dayLength + nightLength)),
+    -HALF_PI
+  );
+
+  stroke(250);
+  strokeWeight(3);
+  translate(width - 50, 120);
+  rotate((TWO_PI * getTime()) / (dayLength + nightLength));
+  line(0, 0, 0, -37.5);
 }

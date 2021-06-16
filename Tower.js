@@ -8,6 +8,10 @@ class Block {
     strokeWeight(1);
     circle(w * (this.pos.x + 0.5), w * (this.pos.y + 0.5), w * 0.5);
   }
+
+  setProps(props) {
+    for (let prop in props) this[prop] = props[prop];
+  }
 }
 
 class Tower extends Block {
@@ -35,8 +39,8 @@ class Tower extends Block {
     "#550000",
   ];
   static firstPrice = { gold: 10, iron: 0, stone: 0 };
-  constructor(x = 0, y = 0, other = {}) {
-    super(x, y);
+  constructor(other = {}) {
+    super(other.pos.x, other.pos.y);
     this.lvl = 0;
     this.health = 100;
     this.maxHealth = this.health;
@@ -49,7 +53,7 @@ class Tower extends Block {
     this.healSpeed = 150;
     this.healStrength = 15;
 
-    for (let prop in other) this[prop] = other[prop];
+    this.setProps(other);
   }
 
   tryUpgrade(_materials = materials) {
@@ -98,7 +102,7 @@ class Tower extends Block {
     for (let mat in currentTower.firstPrice) {
       _materials[mat] -= currentTower.firstPrice[mat];
     }
-    _towers.push(new currentTower(gridPos.x, gridPos.y));
+    _towers.push(new currentTower({ pos: { x: gridPos.x, y: gridPos.y } }));
   }
 
   showConnections() {
@@ -143,11 +147,12 @@ class Tower extends Block {
 }
 
 class Base extends Tower {
-  constructor(x, y, other = {}) {
-    super(x, y, other);
+  constructor(other = {}) {
+    super(other);
     this.health = 10000;
     this.maxHealth = 10000;
     this.price = { gold: 10000, iron: 10, stone: 10 };
+    this.setProps(other);
   }
 
   show() {
@@ -245,11 +250,12 @@ class Base extends Tower {
 // }
 
 class Factory extends Tower {
-  constructor(x, y, other = {}) {
-    super(x, y, other);
+  constructor(other = {}) {
+    super(other);
     this.speed = 30;
     this.efficiency = 2;
     this.specialLevels = [3, 6, 10];
+    this.setProps(other);
   }
 
   upgrade() {
@@ -261,7 +267,7 @@ class Factory extends Tower {
     this.speed -= 5;
   }
 
-  makeAmmoMaterial() {
+  makesteel() {
     if (
       frameCount % this.speed === 0 &&
       materials.stone > 60 &&
@@ -269,20 +275,21 @@ class Factory extends Tower {
     ) {
       materials.stone -= 2;
       materials.iron--;
-      ammoMaterial += 2;
+      steel += 2;
     }
   }
 
   update() {
     super.update();
-    this.makeAmmoMaterial();
+    if (this.constructor.name === "Factory") this.makesteel();
     this.show();
   }
 }
 
 class CanonBallFacory extends Factory {
-  constructor(x, y, other = {}) {
-    super(x, y, other);
+  constructor(other = {}) {
+    super(other);
+    this.setProps(other);
   }
 
   show() {
@@ -303,13 +310,9 @@ class CanonBallFacory extends Factory {
   }
 
   makeAmmo() {
-    if (
-      frameCount % this.speed === 0 &&
-      materials.iron > 25 &&
-      ammoMaterial >= 4
-    ) {
+    if (frameCount % this.speed === 0 && materials.iron > 25 && steel >= 4) {
       materials.iron -= 1;
-      ammoMaterial -= 4;
+      steel -= 4;
       ammo += 4;
     }
   }

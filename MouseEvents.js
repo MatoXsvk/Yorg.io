@@ -83,7 +83,7 @@ function clickedOnUnusedPos(_gridPos = gridPos) {
     if (keyCode === 87 && Wall.buyAble()) Wall.buy(_gridPos);
 
     keyCode = false;
-  } else base = new Base(_gridPos.x, _gridPos.y);
+  } else base = new Base({ pos: { x: _gridPos.x, y: _gridPos.y } });
 }
 
 function clickedOnUsedPos(_gridPos = gridPos) {
