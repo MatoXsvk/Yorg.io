@@ -1,9 +1,11 @@
 class Wall extends Tower {
-  constructor(x, y, other = {}) {
-    super(x, y, other);
+  constructor(other = {}) {
+    super(other);
     this.health = 1000;
     this.connectable = true;
     this.price = { gold: 20, iron: 0, stone: 50 };
+
+    this.setProps(other);
   }
 
   show() {
@@ -23,8 +25,8 @@ class Wall extends Tower {
 }
 
 class Canon extends Tower {
-  constructor(x, y, other = {}) {
-    super(x, y, other);
+  constructor(other = {}) {
+    super(other);
     this.price = { gold: 100, iron: 200, stone: 200 };
     this.reloadSpeed = 25;
     this.strength = 10;
@@ -33,6 +35,8 @@ class Canon extends Tower {
     this.specialLevels = [3, 7, 10];
 
     this.bullets = [];
+
+    this.setProps(other);
   }
 
   upgrade() {
@@ -131,6 +135,7 @@ class Bullet {
     for (let prop in props) {
       this[prop] = props[prop];
     }
+    return this;
   }
 
   show() {
