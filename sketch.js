@@ -48,7 +48,7 @@ function draw() {
 
   background(70);
   if (!isDay() && (getTime() - dayLength) / nightLength <= 0.75) spawnZombies();
-  sortZombies();
+  if (base) sortZombies();
 
   for (let tower of towers) if (tower.connectable) tower.showConnections();
   for (let tower of towers) tower.update ? tower.update() : tower.show();
