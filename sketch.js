@@ -11,8 +11,8 @@ let steel = 0;
 let ammo = 1000;
 const moneyReturn = 0.95;
 
-const dayLength = 18,
-  nightLength = 6,
+const dayLength = 17,
+  nightLength = 7,
   hourLength = 1000;
 
 let towers = [],
@@ -34,7 +34,7 @@ function setup() {
         x = floor(random(grid.x));
         y = floor(random(grid.y));
       } while (!thePosIsNotUsed({ x: x, y: y }));
-      ores.push(new Ore(x, y, o.name));
+      ores.push(new Ore({ pos: { x: x, y: y }, type: o.name }));
     }
   }
 }
@@ -47,6 +47,8 @@ function draw() {
   scale(off.zoom);
 
   background(70);
+  if (!isDay() && (getTime() - dayLength) / nightLength <= 0.75) spawnZombies();
+  sortZombies();
 
   for (let tower of towers) if (tower.connectable) tower.showConnections();
   for (let tower of towers) tower.update ? tower.update() : tower.show();
@@ -57,7 +59,7 @@ function draw() {
   for (let zombie of zombies) zombie.update();
 
   pop();
-  background(0, isDay() ? 0 : 150);
+  background(0, isDay() ? 0 : 75);
 
   if (selected) showUpgradeMenu();
 

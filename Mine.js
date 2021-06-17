@@ -35,7 +35,6 @@ class Mine extends Tower {
     for (let mine of getAllTowersOfType("Mine")) {
       mine.tryUpgrade();
     }
-    console.log(totalPriceOfAllMines);
   }
 
   show(t = frameCount, max = 50) {

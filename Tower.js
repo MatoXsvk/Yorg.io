@@ -12,6 +12,14 @@ class Block {
   setProps(props) {
     for (let prop in props) this[prop] = props[prop];
   }
+
+  getRealPos() {
+    return { x: (this.pos.x + 0.5) * w, y: (this.pos.y + 0.5) * w };
+  }
+
+  distance(pos) {
+    return distance(this.getRealPos(), pos);
+  }
 }
 
 class Tower extends Block {
@@ -129,13 +137,8 @@ class Tower extends Block {
   }
 
   sell(_materials = materials, _moneyReturn = moneyReturn) {
-    console.log("Total: ", this.totalPrice, "\n return: ", moneyReturn);
     for (let mat in _materials)
       _materials[mat] += this.totalPrice[mat] * _moneyReturn;
-  }
-
-  getRealPos() {
-    return { x: (this.pos.x + 0.5) * w, y: (this.pos.y + 0.5) * w };
   }
 
   isTowerNextToThis(tower) {

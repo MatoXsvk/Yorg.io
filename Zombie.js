@@ -55,13 +55,6 @@ class Zombie {
       this.pos.x - 10 + (20 * this.health) / this.maxHealth,
       this.pos.y + 15
     );
-
-    line(
-      this.pos.x,
-      this.pos.y,
-      this.pos.x + this.getVel()[0] * 100,
-      this.pos.y + this.getVel()[1] * 100
-    );
   }
 
   move(target = base) {
@@ -95,7 +88,6 @@ class Zombie {
           if (tower === selected) selected = undefined;
           towers.splice(towers.indexOf(tower), 1);
         } else {
-          console.log("Game over");
           base.health = 0;
           noLoop();
         }

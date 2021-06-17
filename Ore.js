@@ -1,7 +1,8 @@
 class Ore extends Block {
-  constructor(x, y, type = "gold") {
-    super(x, y);
-    this.type = type;
+  constructor(props) {
+    super(props.pos.x, props.pos.y);
+    this.type = "gold";
+    for (let prop in props) this[prop] = props[prop];
   }
 
   show() {

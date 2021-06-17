@@ -47,6 +47,7 @@ function saveGame() {
     steel: steel,
     ammo: ammo,
     zombies: zombies,
+    frameCount: frameCount,
   };
   localStorage.setItem("yorgData", JSON.stringify(dataToSave));
 }
@@ -58,19 +59,17 @@ function loadGame() {
     materials = data["materials"];
 
     if (data["base"]) {
-      // let other = {};
-      // for (let prop in data["base"]) other[prop] = data["base"][prop];
-      console.log(data["base"]);
-      base = new Base(
-        // data["base"].pos.x,
-        // data["base"].pos.y,
-        /*other*/ data["base"]
-      );
+      base = new Base(data["base"]);
     }
 
     ores = [];
     for (let oreData of data["ores"]) {
-      ores.push(new Ore(oreData.pos.x, oreData.pos.y, oreData.type));
+      ores.push(
+        new Ore({
+          pos: { x: oreData.pos.x, y: oreData.pos.y },
+          type: oreData.type,
+        })
+      );
     }
 
     towers = [];
@@ -87,22 +86,29 @@ function loadGame() {
       const addedTower = towers[towers.length - 1];
       if (addedTower.constructor.name === "Canon") {
         const newAmmo = [];
-        for (let ball of addedTower) {
-          newAmmo.push(new Bullet());
+        for (let bulletData of addedTower.bullets) {
+          newAmmo.push(new Bullet(bulletData));
         }
+        addedTower.bullets = newAmmo;
       }
     } /*"({pos: {x: tower_.pos.x, y: tower_.pos.y } } " +*/
-
-    steel = data.steel;
-    ammo = data.ammo;
-
-    zombies = [];
-    console.log(data);
-    for (let zombie of data["zombies"]) {
-      zombies.push(new Zombie(zombie));
-    }
   }
+  steel = data.steel;
+  ammo = data.ammo;
+
+  zombies = [];
+  for (let zombie of data["zombies"]) {
+    zombies.push(new Zombie(zombie));
+  }
+
+  frameCount = data.frameCount;
 }
+
+const sign = (x) => (x < 0 ? -1 : x === 0 ? 0 : 1);
+
+// function sign(x) {
+//   return x < 0 ? -1 : x === 0 ? 0 : 1;
+// }
 
 function distance(pos1, pos2) {
   return sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2);
@@ -113,4 +119,27 @@ function getTime() {
 
 function isDay() {
   return (frameCount / hourLength) % (dayLength + nightLength) < dayLength;
+}
+
+function setTime(time) {
+  frameCount = (time % (dayLength + nightLength)) * hourLength;
+}
+
+function spawnZombies(max_at_once = 2, chance = 50) {
+  for (let i = 0; i < max_at_once; i++)
+    if (floor(random(chance)) === 0) zombies.push(new Zombie());
+}
+
+function sortZombies() {
+  zombies = zombies.sort((a, b) =>
+    sign(-base.distance(b.pos) + base.distance(a.pos))
+  );
+}
+
+function godMode() {
+  materials.gold = Infinity;
+  materials.iron = Infinity;
+  materials.stone = Infinity;
+  steel = Infinity;
+  ammo = Infinity;
 }
